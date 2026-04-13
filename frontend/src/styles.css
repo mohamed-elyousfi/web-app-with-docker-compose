@@ -1,0 +1,261 @@
+:root {
+  font-family: "Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif;
+  color: #14213d;
+  background:
+    radial-gradient(circle at top left, rgba(255, 196, 61, 0.35), transparent 30%),
+    linear-gradient(135deg, #f4efe6 0%, #eef6f7 52%, #e2ebf7 100%);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: #14213d;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
+.page-shell {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+}
+
+.hero-card,
+.panel,
+.product-card {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(20, 33, 61, 0.08);
+  box-shadow: 0 18px 40px rgba(20, 33, 61, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.hero-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 28px;
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow,
+.panel-kicker,
+.product-id {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  color: #577590;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.35rem;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1;
+}
+
+.hero-text {
+  margin-bottom: 0;
+  max-width: 50ch;
+  color: #415a77;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+.panel {
+  border-radius: 24px;
+  padding: 1.4rem;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  background: #14213d;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.product-form,
+.product-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.product-form label {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+.product-form input,
+.product-form textarea {
+  border: 1px solid #cfd8e3;
+  border-radius: 16px;
+  padding: 0.85rem 0.95rem;
+  background: #f9fbfd;
+  color: #14213d;
+}
+
+.product-form input:focus,
+.product-form textarea:focus {
+  outline: 2px solid #8ecae6;
+  border-color: #8ecae6;
+}
+
+.form-actions,
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button,
+.danger-button {
+  border-radius: 999px;
+  padding: 0.8rem 1.15rem;
+  font-weight: 700;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #f77f00, #fcbf49);
+  color: #1b1b1b;
+  box-shadow: 0 12px 30px rgba(247, 127, 0, 0.25);
+}
+
+.secondary-button {
+  background: #e8f1f5;
+  color: #0b2545;
+}
+
+.ghost-button {
+  background: transparent;
+  border: 1px solid #c9d6df;
+  color: #415a77;
+}
+
+.danger-button {
+  background: #d62828;
+  color: #ffffff;
+}
+
+.banner,
+.state-box {
+  border-radius: 18px;
+  padding: 0.95rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.banner.success {
+  background: #e8f7ec;
+  color: #1f6f43;
+}
+
+.banner.error {
+  background: #fdecec;
+  color: #9d0208;
+}
+
+.state-box {
+  background: #f6f8fb;
+  color: #415a77;
+}
+
+.product-card {
+  border-radius: 20px;
+  padding: 1rem;
+}
+
+.product-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.product-card__header h3 {
+  margin-bottom: 0.2rem;
+}
+
+.product-description {
+  color: #415a77;
+}
+
+@media (max-width: 900px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-shell {
+    width: min(100% - 1rem, 100%);
+    padding-top: 1rem;
+  }
+
+  .panel,
+  .hero-card,
+  .product-card {
+    border-radius: 20px;
+  }
+
+  .product-card__header {
+    flex-direction: column;
+  }
+}
+
