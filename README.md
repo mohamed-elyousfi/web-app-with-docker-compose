@@ -1,69 +1,41 @@
-# TP : Application Web Full Stack avec Docker Compose
+# Projet Docker Compose : frontend + backend + base de donnees
 
-## 1. Objectif du projet
+Ce projet realise une application web full stack avec :
 
-Ce projet consiste a realiser une application web complete en respectant une architecture full stack separee en trois services :
+- `frontend` pour l'interface React
+- `backend` pour l'API Node.js + Express
+- `db` pour la base MySQL
 
-- un frontend en React
-- un backend en Node.js avec Express
-- une base de donnees MySQL
+Les trois services sont lances ensemble avec `docker-compose.yml`.
 
-L'ensemble est orchestre avec Docker Compose pour pouvoir lancer toute l'application avec une seule commande, sans installer Node.js ou MySQL localement.
+## Ce que fait le projet
 
-## 2. Resultat final
-
-Apres execution de la commande ci-dessous, l'application est accessible et les trois services communiquent entre eux :
-
-```bash
-docker compose up --build
-```
-
-Acces :
-
-- Frontend : http://localhost:3000
-- Backend : http://localhost:3001/api
-- Base MySQL : localhost:3306
-
-Fonctionnalites disponibles :
-
-- afficher la liste des produits stockes dans MySQL
-- ajouter un produit
-- modifier un produit
-- supprimer un produit
-- gerer les etats de chargement et d'erreur
-
-## 3. Architecture generale
-
-L'application repose sur trois conteneurs Docker :
-
-### Frontend
-
-Le frontend est developpe avec React. Il affiche l'interface utilisateur et envoie les requetes HTTP au backend.
-
-### Backend
-
-Le backend est developpe avec Node.js et Express. Il expose une API REST, valide les donnees recues, execute les requetes SQL et renvoie les reponses au frontend.
-
-### Base de donnees
-
-La base de donnees utilise MySQL. Elle contient une table `products` avec des donnees de test initialisees automatiquement au demarrage.
-
-## 4. Structure du projet
+Flux :
 
 ```text
-.
-|-- backend
-|   |-- src
+Browser -> frontend -> backend -> db
+```
+
+Le frontend affiche les produits.
+Le backend gere les requetes CRUD.
+MySQL stocke les donnees.
+
+## Structure du projet
+
+```text
+t/
+|-- backend/
+|   |-- src/
 |   |   |-- db.js
 |   |   `-- server.js
 |   |-- Dockerfile
 |   `-- package.json
-|-- db
+|-- db/
 |   `-- init.sql
-|-- frontend
-|   |-- nginx
+|-- frontend/
+|   |-- nginx/
 |   |   `-- default.conf
-|   |-- src
+|   |-- src/
 |   |   |-- App.jsx
 |   |   |-- main.jsx
 |   |   `-- styles.css
@@ -75,168 +47,116 @@ La base de donnees utilise MySQL. Elle contient une table `products` avec des do
 `-- README.md
 ```
 
-## 5. Technologies utilisees
+## 1. Backend
 
-- React pour l'interface utilisateur
-- Vite pour builder le frontend React
-- Node.js pour executer le serveur backend
-- Express pour construire l'API REST
-- mysql2 pour connecter Node.js a MySQL
-- MySQL 8.4 pour le stockage des donnees
-- Nginx pour servir le frontend et faire le proxy vers le backend
-- Docker pour conteneuriser les services
-- Docker Compose pour lancer l'ensemble
+Le backend est cree avec Node.js + Express.
 
-## 6. Comment le projet a ete realise
+Il :
 
-### Etape 1 : creation du backend
+- se connecte a MySQL avec `mysql2`
+- valide les donnees recues
+- expose une API REST CRUD
+- renvoie les reponses au frontend en JSON
 
-Le backend a ete cree dans le dossier `backend`.
+Routes disponibles :
 
-Les elements principaux sont :
+- `GET /api`
+- `GET /api/:id`
+- `POST /api`
+- `PUT /api/:id`
+- `DELETE /api/:id`
 
-- `server.js` : initialise Express et declare les routes de l'API
-- `db.js` : configure la connexion a MySQL avec un pool de connexions
+Fichiers principaux :
 
-Le backend utilise :
+- `backend/src/server.js`
+- `backend/src/db.js`
 
-- `express.json()` pour lire les donnees JSON
-- `cors()` pour autoriser les appels HTTP
-- des fonctions de validation pour verifier les champs recus
-- une gestion centralisee des erreurs
-- un mecanisme de tentative de reconnexion a MySQL au demarrage
+## 2. Base de donnees
 
-### Etape 2 : creation de la base de donnees
+La base utilise MySQL.
 
-La base est preparee avec le fichier `db/init.sql`.
+Le fichier `db/init.sql` :
 
-Ce script SQL :
-
-- selectionne la base `testdb`
-- cree la table `products` si elle n'existe pas
-- definit `id` comme cle primaire auto-incrementee
+- cree la base `testdb`
+- cree la table `products`
 - ajoute des donnees de test
 
-La table contient :
+Champs principaux :
 
 - `id`
 - `name`
 - `description`
 - `price`
-- `created_at`
 
-### Etape 3 : creation du frontend
+## 3. Frontend
 
-Le frontend a ete cree dans le dossier `frontend` avec React.
+Le frontend est developpe avec React.
 
-Il permet :
+Il permet de :
 
-- d'afficher tous les produits
-- d'ajouter un produit avec un formulaire
-- de modifier un produit existant
-- de supprimer un produit
-- d'afficher les messages de succes
-- d'afficher les erreurs
-- d'afficher un etat de chargement pendant les requetes
+- afficher la liste des produits
+- ajouter un produit
+- modifier un produit
+- supprimer un produit
+- afficher les erreurs et le chargement
 
-Le composant principal est `frontend/src/App.jsx`.
+Fichier principal :
 
-### Etape 4 : dockerisation
+- `frontend/src/App.jsx`
 
-Chaque partie du projet a ete preparee pour fonctionner dans un conteneur.
+## 4. Dockerfiles
 
-#### Backend
+### Backend
 
-Le backend possede son propre `Dockerfile`.
+Le fichier `backend/Dockerfile` :
 
-Ce Dockerfile :
-
-- part de l'image `node:20-alpine`
-- copie `package.json`
+- utilise `node:20-alpine`
 - installe les dependances
-- copie le code source
-- lance le serveur avec `npm start`
+- copie le code
+- lance `npm start`
 
-#### Frontend
+### Frontend
 
-Le frontend possede egalement son propre `Dockerfile`.
+Le fichier `frontend/Dockerfile` :
 
-Ce Dockerfile utilise deux etapes :
+- build l'application React avec Node.js
+- sert le build avec Nginx
 
-- une etape Node.js pour installer les dependances et generer le build React
-- une etape Nginx pour servir les fichiers statiques produits par Vite
+## 5. Docker Compose
 
-#### Base de donnees
+Le fichier `docker-compose.yml` declare :
 
-La base n'a pas besoin d'un Dockerfile personnalise car elle utilise l'image officielle :
-
-```text
-mysql:8.4
-```
-
-### Etape 5 : orchestration avec Docker Compose
-
-Le fichier `docker-compose.yml` decrit l'ensemble de l'application.
-
-Il declare :
-
-- les trois services `frontend`, `backend` et `db`
-- un volume `mysql-data`
-- un reseau manuel `app-network`
-
-Il configure aussi :
-
-- les ports
-- les variables d'environnement
-- les dependances entre services
-- l'initialisation automatique de la base
-- le healthcheck MySQL
-
-## 7. Explication du fichier docker-compose.yml
+- le service `db`
+- le service `backend`
+- le service `frontend`
+- le volume `mysql-data`
+- le reseau `app-network`
 
 ### Service `db`
 
-Le service `db` represente la base de donnees MySQL.
-
-Il contient :
-
-- l'image officielle `mysql:8.4`
-- les variables `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`
-- le port `3306:3306`
-- le volume `mysql-data:/var/lib/mysql` pour conserver les donnees
-- le montage du script `./db/init.sql` dans `/docker-entrypoint-initdb.d/init.sql`
-- un `healthcheck` pour verifier que MySQL est pret
+- image : `mysql:8.4`
+- port : `3306:3306`
+- volume : `mysql-data:/var/lib/mysql`
+- script SQL monte depuis `db/init.sql`
 
 ### Service `backend`
 
-Le service `backend` est construit a partir du dossier `backend`.
+- build depuis `./backend`
+- port : `3001:3001`
+- connexion MySQL via :
 
-Il contient :
-
-- le port `3001:3001`
-- les variables de connexion a la base
-- `DB_HOST=db`
-
-Le point important est que le backend ne se connecte pas a `localhost`, mais au service Docker `db`, ce qui respecte la contrainte du sujet.
+```text
+DB_HOST=db
+```
 
 ### Service `frontend`
 
-Le service `frontend` est construit a partir du dossier `frontend`.
+- build depuis `./frontend`
+- port : `3000:80`
 
-Il contient :
+## 6. Reseau Docker
 
-- le port `3000:80`
-- une dependance vers le backend
-
-Le navigateur accede donc a l'application via `http://localhost:3000`.
-
-### Volume
-
-Le volume `mysql-data` permet de garder les donnees meme si le conteneur MySQL est recree.
-
-### Reseau
-
-Le reseau `app-network` est declare manuellement :
+Le reseau est declare manuellement dans Compose :
 
 ```yaml
 networks:
@@ -244,98 +164,29 @@ networks:
     driver: bridge
 ```
 
-Les trois services sont attaches a ce meme reseau. Cela permet aux conteneurs de communiquer entre eux avec leur nom de service.
+Les trois services utilisent ce meme reseau.
 
-Exemples :
+Cela permet :
 
-- le backend accede a MySQL avec `db:3306`
-- le frontend accede au backend avec `backend:3001`
+- au backend de joindre MySQL avec `db`
+- au frontend de joindre le backend avec `backend`
 
-## 8. Role de Nginx dans le projet
+## 7. Role de Nginx
 
 Nginx est utilise dans le conteneur frontend.
 
-Il a deux roles :
+Il sert :
 
-- servir les fichiers statiques du build React
-- faire un proxy des requetes `/api` vers le backend
+- les fichiers React builds
+- les requetes `/api` vers le backend
 
-Cela permet au frontend d'appeler simplement `/api` sans avoir a gerer un probleme de communication entre origines.
-
-Le fichier de configuration se trouve dans :
+Fichier :
 
 ```text
 frontend/nginx/default.conf
 ```
 
-## 9. Comment l'application fonctionne
-
-Voici le cheminement complet d'une requete :
-
-1. L'utilisateur ouvre le frontend sur `http://localhost:3000`
-2. Nginx sert les fichiers du frontend React
-3. React envoie une requete HTTP vers `/api`
-4. Nginx redirige cette requete vers le service `backend`
-5. Express recoit la requete
-6. Le backend interroge MySQL via le service `db`
-7. MySQL renvoie les donnees
-8. Le backend renvoie une reponse JSON au frontend
-9. React met a jour l'interface
-
-## 10. API REST implementee
-
-L'API REST complete implemente les routes suivantes :
-
-### `GET /api`
-
-Retourne tous les produits.
-
-### `GET /api/:id`
-
-Retourne un produit selon son identifiant.
-
-### `POST /api`
-
-Ajoute un nouveau produit.
-
-Exemple de corps JSON :
-
-```json
-{
-  "name": "Casque audio",
-  "description": "Casque sans fil",
-  "price": 99.99
-}
-```
-
-### `PUT /api/:id`
-
-Modifie un produit existant.
-
-### `DELETE /api/:id`
-
-Supprime un produit.
-
-## 11. Gestion des erreurs
-
-Le backend gere plusieurs types d'erreurs :
-
-- identifiant invalide
-- produit inexistant
-- champ `name` vide
-- champ `price` invalide
-- erreurs internes du serveur
-- erreurs de connexion a MySQL
-
-Le frontend affiche egalement les erreurs recues afin d'informer l'utilisateur.
-
-## 12. Donnees de test
-
-Au premier lancement, MySQL execute automatiquement `db/init.sql`.
-
-Ce fichier insere des produits de demonstration pour que l'application soit directement utilisable apres le demarrage.
-
-## 13. Lancement du projet
+## 8. Lancement du projet
 
 Depuis la racine du projet :
 
@@ -349,50 +200,67 @@ Pour lancer en arriere-plan :
 docker compose up --build -d
 ```
 
-Pour arreter les services :
+## 9. Acces
+
+- Frontend : `http://localhost:3000`
+- Backend : `http://localhost:3001/api`
+- MySQL : `localhost:3306`
+
+## 10. Verifications
+
+Apres lancement :
+
+- ouvrir `http://localhost:3000`
+- verifier que les produits de test s'affichent
+- ajouter un produit
+- modifier un produit
+- supprimer un produit
+
+Cela confirme la communication entre :
+
+- le frontend
+- le backend
+- la base MySQL
+
+## 11. Commandes utiles
+
+Arreter les services :
 
 ```bash
 docker compose down
 ```
 
-Pour arreter et supprimer aussi les volumes :
+Arreter et supprimer aussi le volume :
 
 ```bash
 docker compose down -v
 ```
 
-## 14. Verifications effectuees
+Voir les conteneurs :
 
-Le projet a ete verifie de la facon suivante :
+```bash
+docker compose ps
+```
 
-- validation de la configuration avec `docker compose config`
-- build et lancement complet avec `docker compose up --build`
-- verification du fonctionnement des trois services
-- test des routes CRUD
-- verification de l'acces aux donnees MySQL depuis le frontend
+Voir les logs :
 
-## 15. Ce que montre ce projet
+```bash
+docker compose logs
+```
 
-Ce TP permet de mettre en pratique :
+## 12. Logique de communication
 
-- une architecture full stack separee
-- le developpement d'une API REST CRUD
-- la connexion d'un backend a une base MySQL
-- la consommation d'une API depuis React
-- la conteneurisation avec Docker
-- l'orchestration multi-services avec Docker Compose
+- le navigateur accede au frontend via `localhost:3000`
+- Nginx envoie `/api` au backend
+- le backend interroge MySQL avec `db`
+- les donnees reviennent ensuite vers React
 
-## 16. Conclusion
+Point important :
 
-Cette application montre comment construire une petite architecture web complete, claire et modulaire.
+Dans Docker, les services communiquent avec leur nom de service :
 
-Le frontend, le backend et la base de donnees sont separes, mais fonctionnent ensemble grace a Docker Compose, au reseau Docker partage et aux variables d'environnement.
+- `db`
+- `backend`
+- `frontend`
 
-Le projet respecte les contraintes demandees :
-
-- separation frontend / backend
-- utilisation de MySQL
-- API REST CRUD complete
-- utilisation du nom de service `db` pour la base
-- aucun service a installer localement
-- orchestration complete avec Docker Compose
+Le backend n'utilise donc pas `localhost` pour joindre MySQL.
