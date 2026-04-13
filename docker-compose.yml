@@ -19,6 +19,8 @@ services:
       timeout: 5s
       retries: 10
       start_period: 25s
+    networks:
+      - app-network
 
   backend:
     build:
@@ -37,6 +39,8 @@ services:
         condition: service_healthy
     ports:
       - "3001:3001"
+    networks:
+      - app-network
 
   frontend:
     build:
@@ -47,7 +51,12 @@ services:
       - backend
     ports:
       - "3000:80"
+    networks:
+      - app-network
 
 volumes:
   mysql-data:
 
+networks:
+  app-network:
+    driver: bridge
